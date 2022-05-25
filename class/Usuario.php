@@ -1,18 +1,20 @@
 <?php
 
+use function PHPUnit\Framework\throwException;
+//classe
 class Usuario {
-
+    //atributos
     private $idusuario;
     private $deslogin;
     private $dessenha;
     private $dtcadastro;
-
+    //gets
     public function getIdusuario(){
 
         return $this->idusuario;
 
     }
-
+    //sets
     public function setIdusuario($value){
 
         $this->idusuario = $value;
@@ -54,7 +56,7 @@ class Usuario {
         $this->dtcadastro = $value;
 
     }
-
+    //METODOS.DE.SELECT...................
     public function loadById($id){
 
         $sql = new Sql();
@@ -78,18 +80,64 @@ class Usuario {
 
     }
 
-    public function __toString(){
+    public static function getList(){
 
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_usuarios ORDER BY deslogin");
+
+    }
+
+    public static function search($login){
+
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM tb_usuarios WHERE deslogin LIKE :SEARCH ORDER BY deslogin", array(
+            ':SEARCH' => "%".$login."%"
+        ));
+
+    }
+
+    public function login($login, $password){
+
+        $sql = new Sql();
+
+        $results = $sql->select("SELECT * FROM tb_usuarios WHERE deslogin = :LOGIN AND dessenha = :PASSWORD", array(
+
+            ":LOGIN"=>$login,
+            ":PASSWORD"=>$password
+
+        ));
+
+        if (count($results) > 0) {
+
+            $row = $results[0];
+
+            $this->setIdusuario($row['idusuario']);
+            $this->setDeslogin($row['deslogin']);
+            $this->setDessenha($row['dessenha']);
+            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+
+        } else {
+           throw new Exception("Algo esta errado!");
+        }
+
+    }
+    //FIM.METODOS.DE.SELECT...................
+
+    //METODO MAGICO CONVERTE PARA STRING.....
+    public function __toString(){
+        //RETORNO DE JSON
         return json_encode(array(
 
             "idusuario"=>$this->getIdusuario(),
             "deslogin"=>$this->getDeslogin(),
-            "dessenha"=>$this->getDessenha(),
+            "dessenha"=>$this->getDessenha(),     //FORMATANDO DT/HR
             "dtcadastro"=>$this->getDtcadastro()->format("d/m/Y H:i:s")
 
         ));
 
     }
+    
 
 }
 
