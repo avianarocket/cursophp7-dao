@@ -69,12 +69,13 @@ class Usuario {
 
         if (count($results) > 0) {
 
-            $row = $results[0];
+            // $row = $results[0];
+            // $this->setIdusuario($row['idusuario']);
+            // $this->setDeslogin($row['deslogin']);
+            // $this->setDessenha($row['dessenha']);
+            // $this->setDtcadastro(new DateTime($row['dtcadastro']));
 
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            $this->setData($results[0]);
 
         }
 
@@ -110,22 +111,77 @@ class Usuario {
 
         if (count($results) > 0) {
 
-            $row = $results[0];
-
-            $this->setIdusuario($row['idusuario']);
-            $this->setDeslogin($row['deslogin']);
-            $this->setDessenha($row['dessenha']);
-            $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            // $row = $results[0];
+            // $this->setIdusuario($row['idusuario']);
+            // $this->setDeslogin($row['deslogin']);
+            // $this->setDessenha($row['dessenha']);
+            // $this->setDtcadastro(new DateTime($row['dtcadastro']));
+            $this->setData($results[0]);
 
         } else {
-           throw new Exception("Algo esta errado!");
+
+            throw new Exception("Login e/ou senha inválidos.");
+
         }
 
     }
-    //FIM.METODOS.DE.SELECT...................
+    //FIM.METODOS.DE.SELECT...................   
 
-    //METODO MAGICO CONVERTE PARA STRING.....
-    public function __toString(){
+    /////////METODO.SETAR.DADOS///////////
+    public function setData($data){
+
+        $this->setIdusuario($data['idusuario']);
+        $this->setDeslogin($data['deslogin']);
+        $this->setDessenha($data['dessenha']);
+        $this->setDtcadastro(new DateTime($data['dtcadastro']));
+    }
+    
+    /////////METODO.INSERT///////////
+    public function insert(){
+
+        $sql = new Sql();
+
+        $results = $sql->select("CALL sp_usuarios_insert(:LOGIN, :PASSWORD)", array(
+
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD'=>$this->getDessenha()
+
+        ));
+
+        if (count($results) > 0) {
+
+            $this->setData($results[0]);
+
+        }
+
+    }
+
+    /////////METODO.INSERT///////////
+    public function update($login, $password){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+        $sql = new Sql();
+
+        $sql->query("UPDATE tb_usuarios SET deslogin = :LOGIN, dessenha = :PASSWORD WHERE idusuario = :ID", array(
+            ':LOGIN'=>$this->getDeslogin(),
+            ':PASSWORD' =>$this->getDessenha(),
+            ':ID'=>$this->getIdusuario()
+        ));
+
+    }
+
+    ///PASSAR DADOS DIRETO NO OBJETO///////////
+    public function __construct($login = "", $password = ""){
+
+        $this->setDeslogin($login);
+        $this->setDessenha($password);
+
+    }
+
+     //METODO MAGICO CONVERTE PARA STRING.....
+     public function __toString(){
         //RETORNO DE JSON
         return json_encode(array(
 
