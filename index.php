@@ -27,11 +27,21 @@ require_once("config.php");
 
 //update editar usuario
 //estanciando novo objeto usuario
+// $usuario = new Usuario();
+//carregando usuario e setando valor
+// $usuario->loadById(4);
+//Editando o usuario
+// $usuario->update("Miririnha", "lovebranquinho");
+//mostarndo alteração
+// echo $usuario;
+
+//deletar usuario
+//estanciando novo objeto usuario
 $usuario = new Usuario();
 //carregando usuario e setando valor
 $usuario->loadById(4);
 //Editando o usuario
-$usuario->update("Miririnha", "lovebranquinho");
+$usuario->delete();
 //mostarndo alteração
 echo $usuario;
 
